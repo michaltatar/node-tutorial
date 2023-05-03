@@ -1,17 +1,13 @@
-const { readFile } = require('fs')
+const { createReadStream } = require('fs')
 
-const getText = (path) => {
-  return new Promise((resolve, reject) => {
-    readFile(path, 'utf8', (err, data) => {
-      if (err) {
-        reject(err)
-      } else {
-        resolve(data)
-      }
-    })
-  })
-}
+const stream = createReadStream('./content/big.txt', {
+  // chunk size
+  highWaterMark: 90000,
+  encoding: 'utf8',
+})
 
-getText('./content/first.txt')
-  .then((data) => console.log(data))
-  .catch((error) => console.log(error))
+// default chunk of data is 64 kilobytes
+stream.on('data', (result) => {
+  console.log(result)
+})
+stream.on('error', (err) => console.log(err))
